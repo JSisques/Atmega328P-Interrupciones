@@ -3,15 +3,20 @@
 .EQU UBRRvalue = clock/(baud * 16) - 1											;Calculamos el valor de UBRR
 
 .ORG 0x0000																		;Posicion de memoria inicial
-	JMP main_routine															
+	JMP main															
 		
 .ORG 0X0032																		;Posicion de memoria donde se encuentran las interrupciones serial
 	JMP USART0_reception_completed												;Saltamos a la funcion cuando se genere la interrupcion
-	JMP USART0_transmit_buffer_empty											;Saltamos a la funcion cuando se genere la interrupcion
-	JMP USART0_byte_transmitted													;Saltamos a la funcion cuando se genere la interrupcion
+//	JMP USART0_transmit_buffer_empty											;Saltamos a la funcion cuando se genere la interrupcion
+//	JMP USART0_byte_transmitted													;Saltamos a la funcion cuando se genere la interrupcion
 
 .ORG 0x0072
+
+
 main:
+	SER R16
+	OUT DDRB, R16
+
 	LDI R16, HIGH(RAMEND)														;Inicializamos la pila OBLIGATORIO si usamos interrupciones
 	OUT SPH, R16
 	LDI R16, LOW(RAMEND)
@@ -21,7 +26,13 @@ main:
 	SEI																			;Activamos el uso de interrupciones
 
 	loop:
-		NOP																		;No hacemos nada
+		//Mantenemos el micro ocupado encendiendo y apagando un LED
+
+		SBI PORTB, 5															;Encendemos solo el LED de la posicion 5
+		CALL delay																;Llamamos a la función delay
+		CBI PORTB, 5															;Apagamos el LED que hemos encendido antes
+		CALL delay																;Llamamos a la función delay
+		
 		RJMP loop																;Saltamos a la etiqueta loop
 
 
@@ -54,4 +65,30 @@ USART0_reception_completed:
 	OUT SREG, R16																;Restablecemos el registro SREG
 	POP R16
 	RETI																		;RETI equivale a RET pero utilizado en interrupciones
-											
+
+delay:
+
+	PUSH R18
+	PUSH R19
+	PUSH R20
+
+	; Assembly code auto-generated
+	; by utility from Bret Mulvey
+	; Delay 8 000 000 cycles
+	; 500ms at 16 MHz
+
+    ldi  r18, 41
+    ldi  r19, 150
+    ldi  r20, 128
+	L1: dec  r20
+		brne L1
+		dec  r19
+		brne L1
+		dec  r18
+		brne L1
+
+	POP R20
+	POP R19
+	POP R18
+	RET
+									
