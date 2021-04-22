@@ -1,3 +1,7 @@
+/**************************************************************************
+	Autor: Javier Plaza Sisqués
+***************************************************************************/
+
 .EQU clock = 16000000															;Frecuencia del reloj
 .EQU baud = 9600																;Numero de bits por segundo
 .EQU UBRRvalue = clock/(baud * 16) - 1											;Calculamos el valor de UBRR
@@ -11,7 +15,6 @@
 //	JMP USART0_byte_transmitted													;Saltamos a la funcion cuando se genere la interrupcion
 
 .ORG 0x0072
-
 
 main:
 	SER R16
@@ -35,6 +38,17 @@ main:
 		
 		RJMP loop																;Saltamos a la etiqueta loop
 
+/**************************************************************************
+
+	Fin del programa principal
+
+***************************************************************************/
+
+/**************************************************************************
+
+	Función de inicialización serial
+
+***************************************************************************/
 
 init_USART0:																	;Funcion para cargar el valor de UBRR
 	LDI R16, LOW(UBRRvalue)														;Cogemos el valor bajo de la variable UBRRvalue
@@ -50,7 +64,11 @@ init_USART0:																	;Funcion para cargar el valor de UBRR
 	
 	RET
 
-//Función de atención a la interrupcion
+/**************************************************************************
+
+	Función de atención a la interrupcion
+
+***************************************************************************/
 USART0_reception_completed:
 	PUSH R16
 	IN R16, SREG																;Hacemos una copia del registro SREG OBLIGATORIO si se usan interrupciones
@@ -66,6 +84,11 @@ USART0_reception_completed:
 	POP R16
 	RETI																		;RETI equivale a RET pero utilizado en interrupciones
 
+/**************************************************************************
+
+	Función Delay 250ms
+
+***************************************************************************/
 delay:
 
 	PUSH R18
@@ -75,7 +98,7 @@ delay:
 	; Assembly code auto-generated
 	; by utility from Bret Mulvey
 	; Delay 4 000 000 cycles
-	; 250ms at 16 MHz
+	; 250ms at 16 MHz	
 
     ldi  r18, 21
     ldi  r19, 75
