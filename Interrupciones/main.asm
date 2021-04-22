@@ -74,18 +74,20 @@ delay:
 
 	; Assembly code auto-generated
 	; by utility from Bret Mulvey
-	; Delay 8 000 000 cycles
-	; 500ms at 16 MHz
+	; Delay 4 000 000 cycles
+	; 250ms at 16 MHz
 
-    ldi  r18, 41
-    ldi  r19, 150
-    ldi  r20, 128
-	L1: dec  r20
+    ldi  r18, 21
+    ldi  r19, 75
+    ldi  r20, 191
+	L1: 
+		dec  r20
 		brne L1
 		dec  r19
 		brne L1
 		dec  r18
 		brne L1
+		nop
 
 	POP R20
 	POP R19
