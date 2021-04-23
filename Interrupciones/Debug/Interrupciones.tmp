@@ -22,11 +22,12 @@
   <FILE>Interrupciones.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <main><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>19</LINE></main>
-  <USART0_reception_completed><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>74</LINE></USART0_reception_completed>
-  <init_USART0><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>53</LINE></init_USART0>
-  <loop><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>31</LINE></loop>
-  <delay><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>94</LINE></delay>
-  <L1><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>108</LINE></L1>
+  <main><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>23</LINE></main>
+  <USART0_reception_completed><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>86</LINE></USART0_reception_completed>
+  <trigger><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>20</LINE></trigger>
+  <init_USART0><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>65</LINE></init_USART0>
+  <loop><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>43</LINE></loop>
+  <delay><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>110</LINE></delay>
+  <L1><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>124</LINE></L1>
  </LABELS>
 </ASSEMBLER_INFO>

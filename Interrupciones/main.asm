@@ -16,9 +16,16 @@
 
 .ORG 0x0072
 
+.dseg
+	trigger: .BYTE 1
+
+.cseg
 main:
 	SER R16
 	OUT DDRB, R16
+
+	CLR R16
+	STS trigger, R16
 
 	LDI R16, HIGH(RAMEND)														;Inicializamos la pila OBLIGATORIO si usamos interrupciones
 	OUT SPH, R16
@@ -73,16 +80,22 @@ init_USART0:
 ***************************************************************************/
 USART0_reception_completed:
 	PUSH R16
+	PUSH R17
 	IN R16, SREG																;Hacemos una copia del registro SREG OBLIGATORIO si se usan interrupciones
 	PUSH R16
 	
 	LDS R16, UDR0																;Cogemos el byte recivido y hacemos algo con el
 
 	//Procesamos el dato
+	LDI R16, 35
+	BST R16, 0																	;Guardamos en T del SREG el primer bit del registro
+	BLD R17, 0																	;Cargamos el bit guardado en T en el SREG
+	STS trigger, R17															;Guardamos el bit en la variable trigger
 
 	//Finalizamos la interrupcion
 	POP R16
 	OUT SREG, R16																;Restablecemos el registro SREG
+	POP R17
 	POP R16
 	RETI																		;RETI equivale a RET pero utilizado en interrupciones
 
