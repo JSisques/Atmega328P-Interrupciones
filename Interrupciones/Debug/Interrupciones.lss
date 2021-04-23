@@ -1,10 +1,10 @@
 
-AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm Thu Apr 22 11:22:12 2021
+AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm Fri Apr 23 14:29:03 2021
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
                                  
-                                 .EQU clock = 16000000															;Frecuencia del reloj
+                                 /**************************************************************************
                                  
                                  ;***** Created: 2011-02-09 12:03 ******* Source: ATmega328P.xml **********
                                  ;*************************************************************************
@@ -985,6 +985,10 @@ AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Inter
                                  
                                  ; ***** END OF FILE ******************************************************
                                  
+                                 	Autor: Javier Plaza Sisqués
+                                 ***************************************************************************/
+                                 
+                                 .EQU clock = 16000000															;Frecuencia del reloj
                                  .EQU baud = 9600																;Numero de bits por segundo
                                  .EQU UBRRvalue = clock/(baud * 16) - 1											;Calculamos el valor de UBRR
                                  
@@ -992,12 +996,11 @@ AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Inter
 000000 940c 0072                 	JMP main															
                                  		
                                  .ORG 0X0032																		;Posicion de memoria donde se encuentran las interrupciones serial
-000032 940c 008e                 	JMP USART0_reception_completed												;Saltamos a la funcion cuando se genere la interrupcion
+000032 940c 0090                 	JMP USART0_reception_completed												;Saltamos a la funcion cuando se genere la interrupcion
                                  //	JMP USART0_transmit_buffer_empty											;Saltamos a la funcion cuando se genere la interrupcion
                                  //	JMP USART0_byte_transmitted													;Saltamos a la funcion cuando se genere la interrupcion
                                  
                                  .ORG 0x0072
-                                 
                                  
                                  main:
 000072 ef0f                      	SER R16
@@ -1015,67 +1018,93 @@ AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Inter
                                  		//Mantenemos el micro ocupado encendiendo y apagando un LED
                                  
 00007a 9a2d                      		SBI PORTB, 5															;Encendemos solo el LED de la posicion 5
-00007b 940e 0097                 		CALL delay																;Llamamos a la función delay
+00007b 940e 0099                 		CALL delay																;Llamamos a la función delay
 00007d 982d                      		CBI PORTB, 5															;Apagamos el LED que hemos encendido antes
-00007e 940e 0097                 		CALL delay																;Llamamos a la función delay
+00007e 940e 0099                 		CALL delay																;Llamamos a la función delay
+                                 		
 000080 cff9                      		RJMP loop																;Saltamos a la etiqueta loop
                                  
+                                 /**************************************************************************
                                  
-                                 init_USART0:																	;Funcion para cargar el valor de UBRR
-000081 e607                      	LDI R16, LOW(UBRRvalue)														;Cogemos el valor bajo de la variable UBRRvalue
-000082 9300 00c4                 	STS UBRR0L, R16																;Cargamos el valor del byte bajo
-000084 e000                      	LDI R16, HIGH(UBRRvalue)													;Cogemos el valor alto de la variable UBRRvalue
-000085 9300 00c5                 	STS UBRR0H, R16																;Cargamos el valor del byte alto
+                                 	Fin del programa principal
+                                 
+                                 ***************************************************************************/
+                                 
+                                 /**************************************************************************
+                                 
+                                 	Función de inicialización serial
+                                 
+                                 ***************************************************************************/
+                                 
+                                 init_USART0:
+000081 930f                      	PUSH R16
+000082 e607                      	LDI R16, LOW(UBRRvalue)														;Cogemos el valor bajo de la variable UBRRvalue
+000083 9300 00c4                 	STS UBRR0L, R16																;Cargamos el valor del byte bajo
+000085 e000                      	LDI R16, HIGH(UBRRvalue)													;Cogemos el valor alto de la variable UBRRvalue
+000086 9300 00c5                 	STS UBRR0H, R16																;Cargamos el valor del byte alto
                                  
                                  	//Activamos la recepcion y transmision de datos
-000087 ef08                      	LDI R16, (1 << RXEN0)|(1 << TXEN0)|(1 << UDRIE0)|(1 << TXCIE0)|(1 << RXCIE0)
-000088 9300 00c1                 	STS UCSR0B, R16																;Asignamos al registro UCSR0B los bits establecidos
-00008a e006                      	LDI R16, (0 << UMSEL00)|(1 << UCSZ01)|(1 << UCSZ00)|(0 << USBS0)|(0 << UPM01)|(0 << UPM00)
-00008b 9300 00c2                 	STS UCSR0C, R16																;Asignamos al registro UCSR0C los bits establecidos				
-                                 	
-00008d 9508                      	RET
+000088 e900                      	LDI R16, (1 << RXEN0)|(0 << TXEN0)|(0 << UDRIE0)|(0 << TXCIE0)|(1 << RXCIE0)
+000089 9300 00c1                 	STS UCSR0B, R16																;Asignamos al registro UCSR0B los bits establecidos
+00008b e006                      	LDI R16, (0 << UMSEL00)|(1 << UCSZ01)|(1 << UCSZ00)|(0 << USBS0)|(0 << UPM01)|(0 << UPM00)
+00008c 9300 00c2                 	STS UCSR0C, R16																;Asignamos al registro UCSR0C los bits establecidos				
+00008e 910f                      	POP R16
                                  
-                                 //Función de atención a la interrupcion
+00008f 9508                      	RET
+                                 
+                                 /**************************************************************************
+                                 
+                                 	Función de atención a la interrupcion
+                                 
+                                 ***************************************************************************/
                                  USART0_reception_completed:
-00008e 930f                      	PUSH R16
-00008f b70f                      	IN R16, SREG																;Hacemos una copia del registro SREG OBLIGATORIO si se usan interrupciones
 000090 930f                      	PUSH R16
+000091 b70f                      	IN R16, SREG																;Hacemos una copia del registro SREG OBLIGATORIO si se usan interrupciones
+000092 930f                      	PUSH R16
                                  	
-000091 9100 00c6                 	LDS R16, UDR0																;Cogemos el byte recivido y hacemos algo con el
+000093 9100 00c6                 	LDS R16, UDR0																;Cogemos el byte recivido y hacemos algo con el
                                  
                                  	//Procesamos el dato
                                  
                                  	//Finalizamos la interrupcion
-000093 910f                      	POP R16
-000094 bf0f                      	OUT SREG, R16																;Restablecemos el registro SREG
 000095 910f                      	POP R16
-000096 9518                      	RETI																		;RETI equivale a RET pero utilizado en interrupciones
+000096 bf0f                      	OUT SREG, R16																;Restablecemos el registro SREG
+000097 910f                      	POP R16
+000098 9518                      	RETI																		;RETI equivale a RET pero utilizado en interrupciones
                                  
+                                 /**************************************************************************
+                                 
+                                 	Función Delay 250ms
+                                 
+                                 ***************************************************************************/
                                  delay:
                                  
-000097 932f                      	PUSH R18
-000098 933f                      	PUSH R19
-000099 934f                      	PUSH R20
+000099 932f                      	PUSH R18
+00009a 933f                      	PUSH R19
+00009b 934f                      	PUSH R20
                                  
-                                 	; Assembly code auto-generated
-                                 	; by utility from Bret Mulvey
-                                 	; Delay 8 000 000 cycles
-                                 	; 500ms at 16 MHz
+                                 ; Assembly code auto-generated
+                                 ; by utility from Bret Mulvey
+                                 ; Delay 4 000 000 cycles
+                                 ; 250ms at 16 MHz
                                  
-00009a e229                          ldi  r18, 41
-00009b e936                          ldi  r19, 150
-00009c e840                          ldi  r20, 128
-00009d 954a                      	L1: dec  r20
-00009e f7f1                      		brne L1
-00009f 953a                      		dec  r19
-0000a0 f7e1                      		brne L1
-0000a1 952a                      		dec  r18
-0000a2 f7d1                      		brne L1
+00009c e125                          ldi  r18, 21
+00009d e43b                          ldi  r19, 75
+00009e eb4f                          ldi  r20, 191
+00009f 954a                      L1: dec  r20
+0000a0 f7f1                          brne L1
+0000a1 953a                          dec  r19
+0000a2 f7e1                          brne L1
+0000a3 952a                          dec  r18
+0000a4 f7d1                          brne L1
+0000a5 0000                          nop
                                  
-0000a3 914f                      	POP R20
-0000a4 913f                      	POP R19
-0000a5 912f                      	POP R18
-0000a6 9508                      	RET
+                                 
+                                 
+0000a6 914f                      	POP R20
+0000a7 913f                      	POP R19
+0000a8 912f                      	POP R18
+0000a9 9508                      	RET
 
 
 RESOURCE USE INFORMATION
@@ -1095,7 +1124,7 @@ counted separately from r26..r31 here.
 "ATmega328P" register use summary:
 x  :   0 y  :   0 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  21 r17:   0 r18:   4 r19:   4 r20:   4 
+r13:   0 r14:   0 r15:   0 r16:  23 r17:   0 r18:   4 r19:   4 r20:   4 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   0 r31:   0 
 Registers used: 4 out of 35 (11.4%)
@@ -1113,19 +1142,19 @@ cpi   :   0 cpse  :   0 dec   :   3 eor   :   0 fmul  :   0 fmuls :   0
 fmulsu:   0 icall :   0 ijmp  :   0 in    :   1 inc   :   0 jmp   :   2 
 ld    :   0 ldd   :   0 ldi   :   9 lds   :   1 lpm   :   0 lsl   :   0 
 lsr   :   0 mov   :   0 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :   4 pop   :   5 
-push  :   5 rcall :   1 ret   :   2 reti  :   1 rjmp  :   1 rol   :   0 
+neg   :   0 nop   :   1 or    :   0 ori   :   0 out   :   4 pop   :   6 
+push  :   6 rcall :   1 ret   :   2 reti  :   1 rjmp  :   1 rol   :   0 
 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   1 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   0 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   1 ses   :   0 set   :   0 sev   :   0 
 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :   4 
 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
-Instructions used: 19 out of 113 (16.8%)
+Instructions used: 20 out of 113 (17.7%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00014e    114      0    114   32768   0.3%
+[.cseg] 0x000000 0x000154    120      0    120   32768   0.4%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

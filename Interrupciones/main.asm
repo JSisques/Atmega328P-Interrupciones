@@ -50,18 +50,20 @@ main:
 
 ***************************************************************************/
 
-init_USART0:																	;Funcion para cargar el valor de UBRR
+init_USART0:
+	PUSH R16
 	LDI R16, LOW(UBRRvalue)														;Cogemos el valor bajo de la variable UBRRvalue
 	STS UBRR0L, R16																;Cargamos el valor del byte bajo
 	LDI R16, HIGH(UBRRvalue)													;Cogemos el valor alto de la variable UBRRvalue
 	STS UBRR0H, R16																;Cargamos el valor del byte alto
 
 	//Activamos la recepcion y transmision de datos
-	LDI R16, (1 << RXEN0)|(1 << TXEN0)|(1 << UDRIE0)|(1 << TXCIE0)|(1 << RXCIE0)
+	LDI R16, (1 << RXEN0)|(0 << TXEN0)|(0 << UDRIE0)|(0 << TXCIE0)|(1 << RXCIE0)
 	STS UCSR0B, R16																;Asignamos al registro UCSR0B los bits establecidos
 	LDI R16, (0 << UMSEL00)|(1 << UCSZ01)|(1 << UCSZ00)|(0 << USBS0)|(0 << UPM01)|(0 << UPM00)
 	STS UCSR0C, R16																;Asignamos al registro UCSR0C los bits establecidos				
-	
+	POP R16
+
 	RET
 
 /**************************************************************************
@@ -95,22 +97,23 @@ delay:
 	PUSH R19
 	PUSH R20
 
-	; Assembly code auto-generated
-	; by utility from Bret Mulvey
-	; Delay 4 000 000 cycles
-	; 250ms at 16 MHz	
+; Assembly code auto-generated
+; by utility from Bret Mulvey
+; Delay 4 000 000 cycles
+; 250ms at 16 MHz
 
     ldi  r18, 21
     ldi  r19, 75
     ldi  r20, 191
-	L1: 
-		dec  r20
-		brne L1
-		dec  r19
-		brne L1
-		dec  r18
-		brne L1
-		nop
+L1: dec  r20
+    brne L1
+    dec  r19
+    brne L1
+    dec  r18
+    brne L1
+    nop
+
+
 
 	POP R20
 	POP R19
