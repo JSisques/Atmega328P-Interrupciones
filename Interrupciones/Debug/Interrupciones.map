@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm Fri Apr 23 18:05:13 2021
+AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm Fri Apr 23 19:24:32 2021
 
 
 EQU  SIGNATURE_000 0000001e
@@ -699,9 +699,13 @@ EQU  clock        00f42400
 EQU  baud         00002580
 EQU  UBRRvalue    00000067
 CSEG main         00000072
-CSEG USART0_reception_completed 00000098
+CSEG USART0_reception_completed 000000a4
 DSEG trigger      00000100
-CSEG init_USART0  00000089
-CSEG loop         00000082
-CSEG delay        000000a5
-CSEG L1           000000ab
+CSEG init_USART0  00000095
+CSEG loop         0000007e
+CSEG resetear     00000088
+CSEG holi         00000080
+CSEG par          00000086
+CSEG blink        0000008c
+CSEG delay        000000b3
+CSEG L1           000000b9

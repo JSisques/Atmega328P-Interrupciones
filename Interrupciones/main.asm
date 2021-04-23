@@ -35,15 +35,38 @@ main:
 	RCALL init_USART0															;Llamamos a la funcion para configurar USART
 	SEI																			;Activamos el uso de interrupciones
 
+	LDI R18, 0
 	loop:
 		//Mantenemos el micro ocupado encendiendo y apagando un LED
+		CPI R18, 8
+		BREQ resetear
 
-		SBI PORTB, 5															;Encendemos solo el LED de la posicion 5
-		CALL delay																;Llamamos a la función delay
-		CBI PORTB, 5															;Apagamos el LED que hemos encendido antes
-		CALL delay																;Llamamos a la función delay
+		holi:
+			LDS R16, trigger
+			CPI R16, 0
+			BREQ par
+
+			SBI PORTB, 0
+			RJMP blink
+
+		par:
+			CBI PORTB, 0
+			RJMP blink
 		
-		RJMP loop																;Saltamos a la etiqueta loop
+		resetear:
+			CLR R18
+			STS trigger, R18
+			RJMP holi
+		
+		blink:	
+			SBI PORTB, 5															;Encendemos solo el LED de la posicion 5
+			CALL delay																;Llamamos a la función delay
+			INC R18
+			CBI PORTB, 5															;Apagamos el LED que hemos encendido antes
+			CALL delay																;Llamamos a la función delay
+			INC R18
+
+			RJMP loop																;Saltamos a la etiqueta loop
 
 /**************************************************************************
 
@@ -87,7 +110,6 @@ USART0_reception_completed:
 	LDS R16, UDR0																;Cogemos el byte recivido y hacemos algo con el
 
 	//Procesamos el dato
-	LDI R16, 35
 	BST R16, 0																	;Guardamos en T del SREG el primer bit del registro
 	BLD R17, 0																	;Cargamos el bit guardado en T en el SREG
 	STS trigger, R17															;Guardamos el bit en la variable trigger
@@ -131,5 +153,5 @@ L1: dec  r20
 	POP R20
 	POP R19
 	POP R18
-	RET
-									
+	RET	
+					

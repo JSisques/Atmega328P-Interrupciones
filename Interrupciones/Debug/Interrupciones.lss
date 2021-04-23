@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm Fri Apr 23 18:05:13 2021
+AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm Fri Apr 23 19:24:32 2021
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\avrasm\inc\m328Pdef.inc'
@@ -996,7 +996,7 @@ AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Inter
 000000 940c 0072                 	JMP main															
                                  		
                                  .ORG 0X0032																		;Posicion de memoria donde se encuentran las interrupciones serial
-000032 940c 0098                 	JMP USART0_reception_completed												;Saltamos a la funcion cuando se genere la interrupcion
+000032 940c 00a4                 	JMP USART0_reception_completed												;Saltamos a la funcion cuando se genere la interrupcion
                                  //	JMP USART0_transmit_buffer_empty											;Saltamos a la funcion cuando se genere la interrupcion
                                  //	JMP USART0_byte_transmitted													;Saltamos a la funcion cuando se genere la interrupcion
                                  
@@ -1013,28 +1013,46 @@ AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Inter
 000074 2700                      	CLR R16
 000075 9300 0100                 	STS trigger, R16
                                  
-000077 e203                      	LDI R16, 35
-000078 fb00                      	BST R16, 0																	;Guardamos en T del SREG el primer bit del registro
-000079 f910                      	BLD R17, 0																	;Cargamos el bit guardado en T en el SREG
-00007a 9310 0100                 	STS trigger, R17															;Guardamos el bit en la variable trigger
+000077 e008                      	LDI R16, HIGH(RAMEND)														;Inicializamos la pila OBLIGATORIO si usamos interrupciones
+000078 bf0e                      	OUT SPH, R16
+000079 ef0f                      	LDI R16, LOW(RAMEND)
+00007a bf0d                      	OUT SPL, R16
                                  
-00007c e008                      	LDI R16, HIGH(RAMEND)														;Inicializamos la pila OBLIGATORIO si usamos interrupciones
-00007d bf0e                      	OUT SPH, R16
-00007e ef0f                      	LDI R16, LOW(RAMEND)
-00007f bf0d                      	OUT SPL, R16
+00007b d019                      	RCALL init_USART0															;Llamamos a la funcion para configurar USART
+00007c 9478                      	SEI																			;Activamos el uso de interrupciones
                                  
-000080 d008                      	RCALL init_USART0															;Llamamos a la funcion para configurar USART
-000081 9478                      	SEI																			;Activamos el uso de interrupciones
-                                 
+00007d e020                      	LDI R18, 0
                                  	loop:
                                  		//Mantenemos el micro ocupado encendiendo y apagando un LED
+00007e 3028                      		CPI R18, 8
+00007f f041                      		BREQ resetear
                                  
-000082 9a2d                      		SBI PORTB, 5															;Encendemos solo el LED de la posicion 5
-000083 940e 00a5                 		CALL delay																;Llamamos a la función delay
-000085 982d                      		CBI PORTB, 5															;Apagamos el LED que hemos encendido antes
-000086 940e 00a5                 		CALL delay																;Llamamos a la función delay
+                                 		holi:
+000080 9100 0100                 			LDS R16, trigger
+000082 3000                      			CPI R16, 0
+000083 f011                      			BREQ par
+                                 
+000084 9a28                      			SBI PORTB, 0
+000085 c006                      			RJMP blink
+                                 
+                                 		par:
+000086 9828                      			CBI PORTB, 0
+000087 c004                      			RJMP blink
                                  		
-000088 cff9                      		RJMP loop																;Saltamos a la etiqueta loop
+                                 		resetear:
+000088 2722                      			CLR R18
+000089 9320 0100                 			STS trigger, R18
+00008b cff4                      			RJMP holi
+                                 		
+                                 		blink:	
+00008c 9a2d                      			SBI PORTB, 5															;Encendemos solo el LED de la posicion 5
+00008d 940e 00b3                 			CALL delay																;Llamamos a la función delay
+00008f 9523                      			INC R18
+000090 982d                      			CBI PORTB, 5															;Apagamos el LED que hemos encendido antes
+000091 940e 00b3                 			CALL delay																;Llamamos a la función delay
+000093 9523                      			INC R18
+                                 
+000094 cfe9                      			RJMP loop																;Saltamos a la etiqueta loop
                                  
                                  /**************************************************************************
                                  
@@ -1049,20 +1067,20 @@ AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Inter
                                  ***************************************************************************/
                                  
                                  init_USART0:
-000089 930f                      	PUSH R16
-00008a e607                      	LDI R16, LOW(UBRRvalue)														;Cogemos el valor bajo de la variable UBRRvalue
-00008b 9300 00c4                 	STS UBRR0L, R16																;Cargamos el valor del byte bajo
-00008d e000                      	LDI R16, HIGH(UBRRvalue)													;Cogemos el valor alto de la variable UBRRvalue
-00008e 9300 00c5                 	STS UBRR0H, R16																;Cargamos el valor del byte alto
+000095 930f                      	PUSH R16
+000096 e607                      	LDI R16, LOW(UBRRvalue)														;Cogemos el valor bajo de la variable UBRRvalue
+000097 9300 00c4                 	STS UBRR0L, R16																;Cargamos el valor del byte bajo
+000099 e000                      	LDI R16, HIGH(UBRRvalue)													;Cogemos el valor alto de la variable UBRRvalue
+00009a 9300 00c5                 	STS UBRR0H, R16																;Cargamos el valor del byte alto
                                  
                                  	//Activamos la recepcion y transmision de datos
-000090 e900                      	LDI R16, (1 << RXEN0)|(0 << TXEN0)|(0 << UDRIE0)|(0 << TXCIE0)|(1 << RXCIE0)
-000091 9300 00c1                 	STS UCSR0B, R16																;Asignamos al registro UCSR0B los bits establecidos
-000093 e006                      	LDI R16, (0 << UMSEL00)|(1 << UCSZ01)|(1 << UCSZ00)|(0 << USBS0)|(0 << UPM01)|(0 << UPM00)
-000094 9300 00c2                 	STS UCSR0C, R16																;Asignamos al registro UCSR0C los bits establecidos				
-000096 910f                      	POP R16
+00009c e900                      	LDI R16, (1 << RXEN0)|(0 << TXEN0)|(0 << UDRIE0)|(0 << TXCIE0)|(1 << RXCIE0)
+00009d 9300 00c1                 	STS UCSR0B, R16																;Asignamos al registro UCSR0B los bits establecidos
+00009f e006                      	LDI R16, (0 << UMSEL00)|(1 << UCSZ01)|(1 << UCSZ00)|(0 << USBS0)|(0 << UPM01)|(0 << UPM00)
+0000a0 9300 00c2                 	STS UCSR0C, R16																;Asignamos al registro UCSR0C los bits establecidos				
+0000a2 910f                      	POP R16
                                  
-000097 9508                      	RET
+0000a3 9508                      	RET
                                  
                                  /**************************************************************************
                                  
@@ -1070,23 +1088,24 @@ AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Inter
                                  
                                  ***************************************************************************/
                                  USART0_reception_completed:
-000098 930f                      	PUSH R16
-000099 b70f                      	IN R16, SREG																;Hacemos una copia del registro SREG OBLIGATORIO si se usan interrupciones
-00009a 930f                      	PUSH R16
+0000a4 930f                      	PUSH R16
+0000a5 931f                      	PUSH R17
+0000a6 b70f                      	IN R16, SREG																;Hacemos una copia del registro SREG OBLIGATORIO si se usan interrupciones
+0000a7 930f                      	PUSH R16
                                  	
-00009b 9100 00c6                 	LDS R16, UDR0																;Cogemos el byte recivido y hacemos algo con el
+0000a8 9100 00c6                 	LDS R16, UDR0																;Cogemos el byte recivido y hacemos algo con el
                                  
                                  	//Procesamos el dato
-00009d fb00                      	BST R16, 0																	;Guardamos en T del SREG el primer bit del registro
-00009e f900                      	BLD R16, 0																	;Cargamos el bit guardado en T en el SREG
-00009f 9300 0100                 	STS trigger, R16															;Guardamos el bit en la variable trigger
-                                 
+0000aa fb00                      	BST R16, 0																	;Guardamos en T del SREG el primer bit del registro
+0000ab f910                      	BLD R17, 0																	;Cargamos el bit guardado en T en el SREG
+0000ac 9310 0100                 	STS trigger, R17															;Guardamos el bit en la variable trigger
                                  
                                  	//Finalizamos la interrupcion
-0000a1 910f                      	POP R16
-0000a2 bf0f                      	OUT SREG, R16																;Restablecemos el registro SREG
-0000a3 910f                      	POP R16
-0000a4 9518                      	RETI																		;RETI equivale a RET pero utilizado en interrupciones
+0000ae 910f                      	POP R16
+0000af bf0f                      	OUT SREG, R16																;Restablecemos el registro SREG
+0000b0 911f                      	POP R17
+0000b1 910f                      	POP R16
+0000b2 9518                      	RETI																		;RETI equivale a RET pero utilizado en interrupciones
                                  
                                  /**************************************************************************
                                  
@@ -1095,32 +1114,32 @@ AVRASM ver. 2.2.8  C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Inter
                                  ***************************************************************************/
                                  delay:
                                  
-0000a5 932f                      	PUSH R18
-0000a6 933f                      	PUSH R19
-0000a7 934f                      	PUSH R20
+0000b3 932f                      	PUSH R18
+0000b4 933f                      	PUSH R19
+0000b5 934f                      	PUSH R20
                                  
                                  ; Assembly code auto-generated
                                  ; by utility from Bret Mulvey
                                  ; Delay 4 000 000 cycles
                                  ; 250ms at 16 MHz
                                  
-0000a8 e125                          ldi  r18, 21
-0000a9 e43b                          ldi  r19, 75
-0000aa eb4f                          ldi  r20, 191
-0000ab 954a                      L1: dec  r20
-0000ac f7f1                          brne L1
-0000ad 953a                          dec  r19
-0000ae f7e1                          brne L1
-0000af 952a                          dec  r18
-0000b0 f7d1                          brne L1
-0000b1 0000                          nop
+0000b6 e125                          ldi  r18, 21
+0000b7 e43b                          ldi  r19, 75
+0000b8 eb4f                          ldi  r20, 191
+0000b9 954a                      L1: dec  r20
+0000ba f7f1                          brne L1
+0000bb 953a                          dec  r19
+0000bc f7e1                          brne L1
+0000bd 952a                          dec  r18
+0000be f7d1                          brne L1
+0000bf 0000                          nop
                                  
                                  
                                  
-0000b2 914f                      	POP R20
-0000b3 913f                      	POP R19
-0000b4 912f                      	POP R18
-0000b5 9508                      	RET
+0000c0 914f                      	POP R20
+0000c1 913f                      	POP R19
+0000c2 912f                      	POP R18
+0000c3 9508                      	RET	
 
 
 RESOURCE USE INFORMATION
@@ -1140,37 +1159,37 @@ counted separately from r26..r31 here.
 "ATmega328P" register use summary:
 x  :   0 y  :   0 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  30 r17:   2 r18:   4 r19:   4 r20:   4 
+r13:   0 r14:   0 r15:   0 r16:  28 r17:   4 r18:  10 r19:   4 r20:   4 
 r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   0 r31:   0 
 Registers used: 5 out of 35 (14.3%)
 
 "ATmega328P" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
-andi  :   0 asr   :   0 bclr  :   0 bld   :   2 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :   0 brge  :   0 brhc  :   0 
+andi  :   0 asr   :   0 bclr  :   0 bld   :   1 brbc  :   0 brbs  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :   2 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
 brne  :   3 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   2 call  :   2 cbi   :   1 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
+brvs  :   0 bset  :   0 bst   :   1 call  :   2 cbi   :   2 cbr   :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   2 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
-cpi   :   0 cpse  :   0 dec   :   3 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   1 inc   :   0 jmp   :   2 
-ld    :   0 ldd   :   0 ldi   :  10 lds   :   1 lpm   :   0 lsl   :   0 
+cpi   :   2 cpse  :   0 dec   :   3 eor   :   0 fmul  :   0 fmuls :   0 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   1 inc   :   2 jmp   :   2 
+ld    :   0 ldd   :   0 ldi   :  10 lds   :   2 lpm   :   0 lsl   :   0 
 lsr   :   0 mov   :   0 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :   1 or    :   0 ori   :   0 out   :   4 pop   :   6 
-push  :   6 rcall :   1 ret   :   2 reti  :   1 rjmp  :   1 rol   :   0 
-ror   :   0 sbc   :   0 sbci  :   0 sbi   :   1 sbic  :   0 sbis  :   0 
+neg   :   0 nop   :   1 or    :   0 ori   :   0 out   :   4 pop   :   7 
+push  :   7 rcall :   1 ret   :   2 reti  :   1 rjmp  :   4 rol   :   0 
+ror   :   0 sbc   :   0 sbci  :   0 sbi   :   2 sbic  :   0 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   0 sbrs  :   0 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   1 ses   :   0 set   :   0 sev   :   0 
 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :   7 
 sub   :   0 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
-Instructions used: 23 out of 113 (20.4%)
+Instructions used: 26 out of 113 (23.0%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00016c    144      0    144   32768   0.4%
+[.cseg] 0x000000 0x000188    172      0    172   32768   0.5%
 [.dseg] 0x000100 0x000101      0      1      1    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

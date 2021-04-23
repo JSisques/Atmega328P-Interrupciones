@@ -23,11 +23,15 @@
  </OUTPUT_FILES>
  <LABELS>
   <main><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>23</LINE></main>
-  <USART0_reception_completed><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>86</LINE></USART0_reception_completed>
+  <USART0_reception_completed><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>104</LINE></USART0_reception_completed>
   <trigger><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>20</LINE></trigger>
-  <init_USART0><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>65</LINE></init_USART0>
-  <loop><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>43</LINE></loop>
-  <delay><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>110</LINE></delay>
-  <L1><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>124</LINE></L1>
+  <init_USART0><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>83</LINE></init_USART0>
+  <loop><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>39</LINE></loop>
+  <resetear><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>56</LINE></resetear>
+  <holi><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>44</LINE></holi>
+  <par><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>52</LINE></par>
+  <blink><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>61</LINE></blink>
+  <delay><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>129</LINE></delay>
+  <L1><FILE>C:\Users\Javi\Documents\Atmel Studio\7.0\Interrupciones\Interrupciones\main.asm</FILE><LINE>143</LINE></L1>
  </LABELS>
 </ASSEMBLER_INFO>
